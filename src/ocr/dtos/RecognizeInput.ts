@@ -7,13 +7,8 @@ export class RecognizeInput {
     isArray: true,
     description: 'List of languages to recognize',
     default: 'chi_sim',
-    example: 'eng,chi_sim,chi_tra',
+    example: 'chi_sim',
     enum: ['eng', 'chi_sim', 'chi_tra'],
   })
   langs: string;
-
-  //   // @UploadedFile()
-  //   @ApiProperty({ type: 'string', format: 'binary' })
-  //   // file: Express.Multer.File;
-  //   file: any;
 }

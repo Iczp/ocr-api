@@ -1,40 +1,30 @@
 import {
   Controller,
   Post,
-  Body,
-  UseGuards,
   UseInterceptors,
   UploadedFile,
-  ParseFilePipeBuilder,
   Query,
+  Body,
 } from '@nestjs/common';
 import { OcrService } from './ocr.service';
 import { Express } from 'express';
 import { createWorker } from 'tesseract.js';
-// import { RecognizeDto } from './dtos/RecognizeDto';
-import { ApiKeyGuard } from '../api-key/api-key.guard';
-import {
-  ApiBody,
-  ApiConsumes,
-  ApiHeader,
-  ApiSecurity,
-  ApiTags,
-} from '@nestjs/swagger';
+
+import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RecognizeInput } from './dtos/RecognizeInput';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileUploadDto } from 'src/dtos/FileUploadDto';
 import { FileUploadValidator } from 'src/validators/FileUploadValidator';
+import { RecognizeDto } from './dtos/RecognizeDto';
+import { BaseController } from 'src/bases/BaseController';
+import { mapToFileDto } from 'src/utils/mapToFileDto';
 
 @Controller('ocr')
 @ApiTags('ocrs')
-@ApiSecurity('api-key') // 将 API Key 鉴权配置到 Swagger 文档中
-@ApiHeader({
-  name: 'x-api-key',
-  description: '123',
-})
-@UseGuards(ApiKeyGuard)
-export class OcrController {
-  constructor(private readonly ocrService: OcrService) {}
+export class OcrController extends BaseController {
+  constructor(private readonly ocrService: OcrService) {
+    super();
+  }
 
   @Post('recognize')
   @UseInterceptors(FileInterceptor('file'))
@@ -42,6 +32,19 @@ export class OcrController {
   @ApiBody({
     description: 'image',
     type: FileUploadDto,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'The record has been successfully created.',
+    type: RecognizeDto,
+    // example: {
+    //   text: 'test',
+    //   file: {},
+    //   words: [
+    //     { text: 'te', bbox: { x0: 0, x1: 0, y0: 1, y1: 5 } },
+    //     { text: 'st', bbox: { x0: 0, x1: 0, y0: 1, y1: 5 } },
+    //   ],
+    // },
   })
   async recognize(
     @Query() input: RecognizeInput,
@@ -54,16 +57,18 @@ export class OcrController {
       //     maxSize: 1024 * 1024, // 1M
       //   })
       //   .build(),
-      new FileUploadValidator(1024 * 1024, ['image/jpeg', 'image/png']),
+      new FileUploadValidator(1024 * 1024 * 3, ['image/jpeg', 'image/png']),
     )
     file: Express.Multer.File,
-  ) {
+    @Body() body: any,
+  ): Promise<RecognizeDto> {
     const worker = await createWorker(
-      [
-        // 'eng',
-        'chi_sim',
-        //  'chi_tra',
-      ],
+      // [
+      //   // 'eng',
+      //   'chi_sim',
+      //   //  'chi_tra',
+      // ],
+      input.langs,
       1,
       {
         logger: (m) => {
@@ -77,31 +82,13 @@ export class OcrController {
       text: word.text,
       bbox: word.bbox,
     }));
+    console.log('body', body);
 
-    return {
+    return <RecognizeDto>{
+      file: mapToFileDto(file),
       text: data.text,
       words,
-      input: input,
-      fileSize: file.size,
-    };
-  }
-
-  @UseInterceptors(FileInterceptor('file'))
-  @Post('file/fail-validation')
-  uploadFileAndFailValidation(
-    @Body() body: RecognizeInput,
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'jpg',
-        })
-        .build(),
-    )
-    file: Express.Multer.File,
-  ) {
-    return {
-      body,
-      file: file.buffer.toString(),
+      // input: input,
     };
   }
 }
