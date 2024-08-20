@@ -1,9 +1,8 @@
 import { Controller, Post, Body, Get } from '@nestjs/common';
 import { OcrService } from './ocr.service';
-import { imageData } from './imageData';
 
 import { createWorker } from 'tesseract.js';
-import { text } from 'stream/consumers';
+import { RecognizeDto } from './dtos/RecognizeDto';
 
 @Controller('ocr')
 export class OcrController {
@@ -27,7 +26,7 @@ export class OcrController {
   }
 
   @Get('view')
-  async getView(): Promise<any> {
+  async getView(): Promise<RecognizeDto> {
     // const buffer = Buffer.from(imageData, 'base64');
     // const result = await this.ocrService.recognizeImage(buffer);
 
