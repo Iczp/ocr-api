@@ -4,8 +4,10 @@ import { OcrService } from './ocr.service';
 import { createWorker } from 'tesseract.js';
 import { RecognizeDto } from './dtos/RecognizeDto';
 import { ApiKeyGuard } from '../api-key/api-key.guard';
+import { ApiSecurity } from '@nestjs/swagger';
 
 @Controller('ocr')
+@ApiSecurity('api-key') // 将 API Key 鉴权配置到 Swagger 文档中
 export class OcrController {
   constructor(private readonly ocrService: OcrService) {}
 

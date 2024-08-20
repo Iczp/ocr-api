@@ -17,7 +17,7 @@ export class ApiKeyGuard implements CanActivate {
     console.log('request.params', request.params);
     const apiKey = request.headers['x-api-key'] || request.query['api-key']; // 从请求头中获取 API Key
     const validApiKey = this.configService.get<string>('API_KEY'); // 从环境变量中获取有效的 API Key
-
+    console.log('apiKey', apiKey);
     if (apiKey && apiKey === validApiKey) {
       return true;
     } else {
