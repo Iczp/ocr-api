@@ -27,7 +27,13 @@ export class OcrController extends BaseController {
   }
 
   @Post('recognize')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: {
+        fileSize: 1024 * 1024 * 3, // 3M
+      },
+    }),
+  )
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'image',
@@ -41,14 +47,6 @@ export class OcrController extends BaseController {
   async recognize(
     @Query() input: RecognizeInput,
     @UploadedFile(
-      // new ParseFilePipeBuilder()
-      //   .addFileTypeValidator({
-      //     fileType: 'png',
-      //   })
-      //   .addMaxSizeValidator({
-      //     maxSize: 1024 * 1024, // 1M
-      //   })
-      //   .build(),
       new FileUploadValidator(1024 * 1024 * 3, ['image/jpeg', 'image/png']),
     )
     file: Express.Multer.File,
@@ -75,6 +73,7 @@ export class OcrController extends BaseController {
       bbox: word.bbox,
     }));
     console.log('body', body);
+    console.log('originalname', file.originalname);
 
     return <RecognizeDto>{
       file: mapToFileDto(file),
