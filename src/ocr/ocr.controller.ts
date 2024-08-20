@@ -1,66 +1,107 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipeBuilder,
+  Query,
+} from '@nestjs/common';
 import { OcrService } from './ocr.service';
-
+import { Express } from 'express';
 import { createWorker } from 'tesseract.js';
-import { RecognizeDto } from './dtos/RecognizeDto';
+// import { RecognizeDto } from './dtos/RecognizeDto';
 import { ApiKeyGuard } from '../api-key/api-key.guard';
-import { ApiSecurity } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiHeader,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
+import { RecognizeInput } from './dtos/RecognizeInput';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileUploadDto } from 'src/dtos/FileUploadDto';
+import { FileUploadValidator } from 'src/validators/FileUploadValidator';
 
 @Controller('ocr')
+@ApiTags('ocrs')
 @ApiSecurity('api-key') // 将 API Key 鉴权配置到 Swagger 文档中
+@ApiHeader({
+  name: 'x-api-key',
+  description: '123',
+})
+@UseGuards(ApiKeyGuard)
 export class OcrController {
   constructor(private readonly ocrService: OcrService) {}
 
   @Post('recognize')
-  async recognize(@Body('imageBase64') imageBase64: string) {
-    const buffer = Buffer.from(imageBase64, 'base64');
-    const result = await this.ocrService.recognizeImage(buffer);
-    return result;
-  }
-
-  @Get()
-  getHello(): string {
-    return this.ocrService.getHello();
-  }
-
-  @Get('base64')
-  getBase64(): string {
-    return this.ocrService.getBase64({ path: './images/test.jpg' });
-  }
-
-  @Get('view')
-  @UseGuards(ApiKeyGuard) // 使用 API Key 守卫保护这个路由
-  async getView(): Promise<RecognizeDto> {
-    // const buffer = Buffer.from(imageData, 'base64');
-    // const result = await this.ocrService.recognizeImage(buffer);
-
-    // const path = require('path');
-    // const { createWorker } = require('../../');
-
-    // const [,, imagePath] = process.argv;
-    const image = './images/test.png';
-
-    const worker = await createWorker('eng', 1, {
-      logger: (m) => {
-        console.log(`worker ${m.workerId} - ${m.jobId} progress`, m.progress);
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'image',
+    type: FileUploadDto,
+  })
+  async recognize(
+    @Query() input: RecognizeInput,
+    @UploadedFile(
+      // new ParseFilePipeBuilder()
+      //   .addFileTypeValidator({
+      //     fileType: 'png',
+      //   })
+      //   .addMaxSizeValidator({
+      //     maxSize: 1024 * 1024, // 1M
+      //   })
+      //   .build(),
+      new FileUploadValidator(1024 * 1024, ['image/jpeg', 'image/png']),
+    )
+    file: Express.Multer.File,
+  ) {
+    const worker = await createWorker(
+      [
+        // 'eng',
+        'chi_sim',
+        //  'chi_tra',
+      ],
+      1,
+      {
+        logger: (m) => {
+          console.log(`worker ${m.workerId} - ${m.jobId} progress`, m.progress);
+        },
       },
-    });
-    const { data } = await worker.recognize(image);
+    );
+    const { data } = await worker.recognize(file.buffer);
 
     const words = data.words.map((word) => ({
       text: word.text,
-      left: word.bbox.x0,
-      top: word.bbox.y0,
-      width: word.bbox.x1 - word.bbox.x0,
-      height: word.bbox.y1 - word.bbox.y0,
+      bbox: word.bbox,
     }));
-
-    // console.log(data.text);
-    await worker.terminate();
 
     return {
       text: data.text,
       words,
+      input: input,
+      fileSize: file.size,
+    };
+  }
+
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('file/fail-validation')
+  uploadFileAndFailValidation(
+    @Body() body: RecognizeInput,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: 'jpg',
+        })
+        .build(),
+    )
+    file: Express.Multer.File,
+  ) {
+    return {
+      body,
+      file: file.buffer.toString(),
     };
   }
 }
