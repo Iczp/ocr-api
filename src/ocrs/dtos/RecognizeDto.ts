@@ -1,6 +1,7 @@
 import { FileDto } from 'src/dtos/FileDto';
 import { WordDto } from './WordDto';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 
 export class RecognizeDto {
   @ApiProperty({})
@@ -14,5 +15,6 @@ export class RecognizeDto {
   @ApiProperty({
     type: () => FileDto,
   })
+  @IsNotEmpty()
   file: FileDto;
 }

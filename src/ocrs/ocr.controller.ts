@@ -37,14 +37,6 @@ export class OcrController extends BaseController {
     status: 201,
     description: 'The record has been successfully created.',
     type: RecognizeDto,
-    // example: {
-    //   text: 'test',
-    //   file: {},
-    //   words: [
-    //     { text: 'te', bbox: { x0: 0, x1: 0, y0: 1, y1: 5 } },
-    //     { text: 'st', bbox: { x0: 0, x1: 0, y0: 1, y1: 5 } },
-    //   ],
-    // },
   })
   async recognize(
     @Query() input: RecognizeInput,
