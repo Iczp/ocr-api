@@ -37,7 +37,9 @@ export class OcrController {
     const image = './images/test.png';
 
     const worker = await createWorker('eng', 1, {
-      logger: (m) => console.log(m),
+      logger: (m) => {
+        console.log(`worker ${m.workerId} - ${m.jobId} progress`, m.progress);
+      },
     });
     const { data } = await worker.recognize(image);
 
@@ -49,7 +51,7 @@ export class OcrController {
       height: word.bbox.y1 - word.bbox.y0,
     }));
 
-    console.log(data.text);
+    // console.log(data.text);
     await worker.terminate();
 
     return {
