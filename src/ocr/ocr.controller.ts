@@ -1,8 +1,9 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
 import { OcrService } from './ocr.service';
 
 import { createWorker } from 'tesseract.js';
 import { RecognizeDto } from './dtos/RecognizeDto';
+import { ApiKeyGuard } from '../api-key/api-key.guard';
 
 @Controller('ocr')
 export class OcrController {
@@ -26,6 +27,7 @@ export class OcrController {
   }
 
   @Get('view')
+  @UseGuards(ApiKeyGuard) // 使用 API Key 守卫保护这个路由
   async getView(): Promise<RecognizeDto> {
     // const buffer = Buffer.from(imageData, 'base64');
     // const result = await this.ocrService.recognizeImage(buffer);
