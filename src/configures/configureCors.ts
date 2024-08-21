@@ -10,10 +10,12 @@ export const configureCors = (app: INestApplication<any>) => {
   // 配置 CORS
   app.enableCors({
     origin: (origin, callback) => {
+      console.log('origin', origin);
+
       if (allowedOrigins.includes(origin) || !origin) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'), false);
+        callback(null, false);
       }
     },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',

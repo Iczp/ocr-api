@@ -27,7 +27,7 @@ export class ApiKeyGuard implements CanActivate {
       AllowAnonymousKey,
       context.getHandler(),
     );
-    console.log('allowAnonymousGuard', hasAllowAnonymous);
+    console.log('hasAllowAnonymous', hasAllowAnonymous);
 
     if (hasAllowAnonymous) {
       return true;

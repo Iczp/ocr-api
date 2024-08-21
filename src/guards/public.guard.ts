@@ -6,7 +6,7 @@ export class PublicGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    console.log('PublicGuard', context);
+    console.log('PublicGuard', context.getHandler().name);
     return true;
   }
 }

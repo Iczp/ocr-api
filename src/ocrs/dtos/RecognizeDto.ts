@@ -4,7 +4,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
 export class RecognizeDto {
-  @ApiProperty({})
+  @ApiProperty()
+  langs: string[];
+
+  @ApiProperty()
   text: string;
 
   @ApiProperty({

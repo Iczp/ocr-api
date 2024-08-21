@@ -44,7 +44,7 @@ export class OcrController extends BaseController {
   })
   @ApiResponse({
     status: 201,
-    description: 'The record has been successfully created.',
+    description: 'Successfully recognized.',
     type: RecognizeDto,
   })
   async recognize(
@@ -55,15 +55,14 @@ export class OcrController extends BaseController {
     file: Express.Multer.File,
     @Body() body: any,
   ): Promise<RecognizeDto> {
-    const result = await this.ocrService.recognizeImage(
-      input.langs,
-      file.buffer,
-    );
-
+    const langs = Array.isArray(input.langs)
+      ? input.langs
+      : input.langs.split('+').filter((x) => !!x);
+    const result = await this.ocrService.recognizeImage(langs, file.buffer);
     console.log('body', body);
     console.log('originalname', file.originalname);
-
     return <RecognizeDto>{
+      langs,
       file: mapToFileDto(file),
       ...result,
       // input: input,
