@@ -5,10 +5,10 @@ import {
   UploadedFile,
   Query,
   Body,
+  Get,
 } from '@nestjs/common';
 import { OcrService } from './ocr.service';
 import { Express } from 'express';
-import { createWorker } from 'tesseract.js';
 
 import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RecognizeInput } from './dtos/RecognizeInput';
@@ -52,34 +52,23 @@ export class OcrController extends BaseController {
     file: Express.Multer.File,
     @Body() body: any,
   ): Promise<RecognizeDto> {
-    const worker = await createWorker(
-      // [
-      //   // 'eng',
-      //   'chi_sim',
-      //   //  'chi_tra',
-      // ],
+    const result = await this.ocrService.recognizeImage(
       input.langs,
-      1,
-      {
-        logger: (m) => {
-          console.log(`worker ${m.workerId} - ${m.jobId} progress`, m.progress);
-        },
-      },
+      file.buffer,
     );
-    const { data } = await worker.recognize(file.buffer);
 
-    const words = data.words.map((word) => ({
-      text: word.text,
-      bbox: word.bbox,
-    }));
     console.log('body', body);
     console.log('originalname', file.originalname);
 
     return <RecognizeDto>{
       file: mapToFileDto(file),
-      text: data.text,
-      words,
+      ...result,
       // input: input,
     };
+  }
+
+  @Get('langs')
+  getLangs() {
+    return this.ocrService.languages;
   }
 }
