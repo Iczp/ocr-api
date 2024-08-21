@@ -19,5 +19,8 @@ RUN npm run build
 # 暴露应用运行的端口（通常是3000）
 EXPOSE 3000
 
+# 定义环境变量（可选，这里用于演示）
+ENV OCR_VERSION=0.0.2
+
 # 启动应用
 CMD ["npm", "run", "start:prod"]
