@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: iczp/ocr-api:0.0.3
+    image: iczp/ocr-api:0.0.5
     build:
       context: .
       dockerfile: Dockerfile

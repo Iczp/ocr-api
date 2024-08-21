@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { createWorker } from 'tesseract.js';
 import { langsConsts } from '../consts/langsConsts';
-
+import { dependencies } from '../../package.json';
 @Injectable()
 export class OcrService {
   public readonly languages = langsConsts;
@@ -12,13 +12,15 @@ export class OcrService {
       },
     });
     const { data } = await worker.recognize(buffer);
-
     const words = data.words.map((word) => ({
       text: word.text,
       bbox: word.bbox,
     }));
 
+    const pkgName = 'tesseract.js';
+    const version = `${pkgName} ${dependencies[pkgName]?.replace('^', 'v')}`;
     return {
+      version,
       langs,
       text: data.text,
       words,

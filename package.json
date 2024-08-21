@@ -1,10 +1,12 @@
 {
   "name": "ocr-api",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "API for OCR service with Tesseract",
   "author": "zhongpei <1000@intry.cn>",
+  "email": "1000@intry.cn",
+  "website": "https://iczp.net",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "keywords": [],
   "repository": {
     "type": "git",
@@ -13,7 +15,6 @@
   "scripts": {
     "build": "nest build",
     "build:dc": "docker-compose up --build -d",
-    "build:docker": "docker build -t iczp/ocr-api:0.0.2 .",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

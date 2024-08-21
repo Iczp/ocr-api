@@ -1,12 +1,38 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {
+  name,
+  version,
+  description,
+  email,
+  website,
+  author,
+} from '../../package.json';
 
-export const configureSwagger = (app: INestApplication<any>) => {
+declare module '@nestjs/common' {
+  interface INestApplication {
+    configureSwagger(options?: SwaggerOptions): INestApplication;
+  }
+}
+
+export type SwaggerOptions = {
+  path: string;
+};
+
+export const configureSwagger = (
+  app: INestApplication<any>,
+  config?: SwaggerOptions,
+) => {
+  const settings = config || { path: '/docs' };
+
+  console.log(name, version);
+
   // Swagger 配置
   const options = new DocumentBuilder()
-    .setTitle('OCR API')
-    .setDescription('API for OCR service with Tesseract')
-    .setVersion('1.0')
+    .setTitle(name)
+    .setDescription(description)
+    .setVersion(version)
+    .setContact(author, website, email)
     .addApiKey(
       {
         type: 'apiKey',
@@ -18,5 +44,6 @@ export const configureSwagger = (app: INestApplication<any>) => {
     )
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api-docs', app, document);
+  SwaggerModule.setup(settings.path, app, document);
+  return app;
 };

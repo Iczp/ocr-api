@@ -5,6 +5,9 @@ import { IsNotEmpty } from 'class-validator';
 
 export class RecognizeDto {
   @ApiProperty()
+  version?: string;
+
+  @ApiProperty()
   langs: string[];
 
   @ApiProperty()

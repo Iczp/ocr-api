@@ -1,5 +1,11 @@
 import { INestApplication } from '@nestjs/common';
 
+declare module '@nestjs/common' {
+  interface INestApplication {
+    configureCors(): INestApplication;
+  }
+}
+
 export const configureCors = (app: INestApplication<any>) => {
   // 读取环境变量
   const corsOrigin = process.env.CORS_ORIGIN;
@@ -21,4 +27,5 @@ export const configureCors = (app: INestApplication<any>) => {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Authorization',
   });
+  return app;
 };

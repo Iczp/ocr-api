@@ -62,7 +62,6 @@ export class OcrController extends BaseController {
     console.log('body', body);
     console.log('originalname', file.originalname);
     return <RecognizeDto>{
-      langs,
       file: mapToFileDto(file),
       ...result,
       // input: input,
