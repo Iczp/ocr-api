@@ -6,6 +6,7 @@ import {
   Query,
   Body,
   Get,
+  UseGuards,
 } from '@nestjs/common';
 import { OcrService } from './ocr.service';
 import { Express } from 'express';
@@ -18,6 +19,8 @@ import { FileUploadValidator } from 'src/validators/FileUploadValidator';
 import { RecognizeDto } from './dtos/RecognizeDto';
 import { BaseController } from 'src/bases/BaseController';
 import { mapToFileDto } from 'src/utils/mapToFileDto';
+import { PublicGuard } from 'src/guards/public.guard';
+import { AllowAnonymous } from 'src/guards/allowAnonymousKey.decorator';
 
 @Controller('ocr')
 @ApiTags('ocrs')
@@ -68,6 +71,8 @@ export class OcrController extends BaseController {
   }
 
   @Get('langs')
+  @UseGuards(PublicGuard) // 允许匿名访问
+  @AllowAnonymous()
   getLangs() {
     return this.ocrService.languages;
   }

@@ -5,10 +5,15 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
+import { AllowAnonymousKey } from './allowAnonymousKey.decorator';
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly reflector: Reflector,
+  ) {}
 
   isDevelopmentMode(): boolean {
     // 检查 NODE_ENV 环境变量是否设置为 'development'
@@ -16,8 +21,20 @@ export class ApiKeyGuard implements CanActivate {
   }
 
   canActivate(context: ExecutionContext): boolean {
+    console.log('ApiKeyGuard', context.getHandler());
+
+    const hasAllowAnonymous = this.reflector.get<boolean>(
+      AllowAnonymousKey,
+      context.getHandler(),
+    );
+    console.log('allowAnonymousGuard', hasAllowAnonymous);
+
+    if (hasAllowAnonymous) {
+      return true;
+    }
+
     const request = context.switchToHttp().getRequest();
-    const apiKey = request.headers['x-api-key'] || request.query['api-key']; // 从请求头中获取 API Key
+    const apiKey = request.query['api-key'] || request.headers['x-api-key']; // 从请求头中获取 API Key
     const validApiKey = this.configService.get<string>('API_KEY'); // 从环境变量中获取有效的 API Key
     console.log('apiKey', apiKey);
     if (this.isDevelopmentMode()) {
@@ -25,7 +42,7 @@ export class ApiKeyGuard implements CanActivate {
       console.log('request.params', request.params);
       return true;
     }
-    if (apiKey && apiKey === validApiKey) {
+    if (apiKey === validApiKey) {
       return true;
     } else {
       throw new UnauthorizedException(`Invalid API key: ${apiKey}`);

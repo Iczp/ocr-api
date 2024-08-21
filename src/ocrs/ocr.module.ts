@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import { OcrService } from './ocr.service';
 import { OcrController } from './ocr.controller';
 import { APP_GUARD } from '@nestjs/core';
-import { ApiKeyGuard } from '../api-key/api-key.guard';
+import { ApiKeyGuard } from 'src/guards/api-key.guard';
+
 @Module({
   providers: [
     {
