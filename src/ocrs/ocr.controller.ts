@@ -6,12 +6,17 @@ import {
   Query,
   Body,
   Get,
-  UseGuards,
 } from '@nestjs/common';
 import { OcrService } from './ocr.service';
 import { Express } from 'express';
 
-import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RecognizeInput } from './dtos/RecognizeInput';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileUploadDto } from 'src/dtos/FileUploadDto';
@@ -19,17 +24,17 @@ import { FileUploadValidator } from 'src/validators/FileUploadValidator';
 import { RecognizeDto } from './dtos/RecognizeDto';
 import { BaseController } from 'src/bases/BaseController';
 import { mapToFileDto } from 'src/utils/mapToFileDto';
-import { PublicGuard } from 'src/guards/public.guard';
 import { AllowAnonymous } from 'src/guards/allowAnonymousKey.decorator';
 
 @Controller('ocr')
-@ApiTags('ocrs')
+@ApiTags('OCR')
 export class OcrController extends BaseController {
   constructor(private readonly ocrService: OcrService) {
     super();
   }
 
   @Post('recognize')
+  @ApiOperation({ summary: '识别', description: '返回OCR识别结果' })
   @UseInterceptors(
     FileInterceptor('file', {
       limits: {
@@ -69,8 +74,8 @@ export class OcrController extends BaseController {
   }
 
   @Get('langs')
-  @UseGuards(PublicGuard) // 允许匿名访问
-  @AllowAnonymous()
+  @ApiOperation({ summary: 'OCR支持的语言', description: '返回OCR语言' })
+  @AllowAnonymous() // 允许匿名访问
   getLangs() {
     return this.ocrService.languages;
   }
