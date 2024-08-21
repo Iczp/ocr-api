@@ -1,6 +1,6 @@
 import { ApiSecurity } from '@nestjs/swagger';
-import { UseGuards } from '@nestjs/common';
-import { ApiKeyGuard } from '../api-key/api-key.guard';
+// import { UseGuards } from '@nestjs/common';
+// import { ApiKeyGuard } from '../api-key/api-key.guard';
 
 // @ApiHeader({
 //   name: 'x-api-key',
