@@ -11,7 +11,7 @@ import {
 
 declare module '@nestjs/common' {
   interface INestApplication {
-    configureSwagger(options?: SwaggerOptions): INestApplication;
+    swaggerConfigure(options?: SwaggerOptions): INestApplication;
   }
 }
 
@@ -19,7 +19,7 @@ export type SwaggerOptions = {
   path: string;
 };
 
-export const configureSwagger = (
+export const swaggerConfigure = (
   app: INestApplication<any>,
   config?: SwaggerOptions,
 ) => {

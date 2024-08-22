@@ -2,11 +2,11 @@ import { INestApplication } from '@nestjs/common';
 
 declare module '@nestjs/common' {
   interface INestApplication {
-    configureCors(): INestApplication;
+    corsConfigure(): INestApplication;
   }
 }
 
-export const configureCors = (app: INestApplication<any>) => {
+export const corsConfigure = (app: INestApplication<any>) => {
   // 读取环境变量
   const corsOrigin = process.env.CORS_ORIGIN;
 

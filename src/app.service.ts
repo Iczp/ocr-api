@@ -1,10 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { version } from '../package.json';
+import {
+  version,
+  name,
+  author,
+  email,
+  website,
+  description,
+} from '../package.json';
+import { AppInfo } from './dtos/AppInfo';
 
 @Injectable()
 export class AppService {
-  getVersion(): string {
-    return version;
+  getAppInfo(): AppInfo {
+    return {
+      name,
+      version,
+      description,
+      author,
+      email,
+      website,
+    };
   }
   getHome(): string {
     return `Hello World: init`;
