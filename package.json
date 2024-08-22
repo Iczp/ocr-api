@@ -1,6 +1,6 @@
 {
   "name": "ocr-api",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "API for OCR service with Tesseract",
   "author": "zhongpei <1000@intry.cn>",
   "email": "1000@intry.cn",
