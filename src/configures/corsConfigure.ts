@@ -1,4 +1,5 @@
 import { INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 declare module '@nestjs/common' {
   interface INestApplication {
@@ -7,8 +8,12 @@ declare module '@nestjs/common' {
 }
 
 export const corsConfigure = (app: INestApplication<any>) => {
+  const configService = app.get(ConfigService);
+
   // 读取环境变量
-  const corsOrigin = process.env.CORS_ORIGIN;
+  const corsOrigin = configService.get<string>('CORS_ORIGIN');
+
+  // const corsOrigin = process.env.CORS_ORIGIN;
 
   // 解析 CORS 原点
   const allowedOrigins = corsOrigin ? corsOrigin.split(',') : [];
