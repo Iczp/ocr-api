@@ -15,9 +15,9 @@ async function bootstrap() {
   // 假设你已经通过 ConfigModule 设置了配置
   const configService = app.get(ConfigService); // 通过依赖注入获取 ConfigService
 
-  const port = configService.get<number>('PORT') || 3000; // 从配置中获取 PORT
+  const port = configService.get<number>('HOST_PORT') || 3000; // 从配置中获取 PORT
 
-  const hostname = configService.get<string>('HOST'); // 从配置中获取 PORT
+  const hostname = configService.get<string>('HOST_NAME'); // 从配置中获取 PORT
 
   await app.listen(port, hostname, () => {
     Logger.warn(`[hostname] ${hostname}:${port}`);
