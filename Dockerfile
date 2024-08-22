@@ -36,7 +36,7 @@ RUN npm install --production
 EXPOSE 3000
 
 # 设置环境变量
-ENV OCR_VERSION=0.0.2
+# ENV OCR_VERSION=0.0.2
 
 # 启动应用
 # 注意：这里需要根据你的NestJS项目配置来设置正确的启动命令
@@ -49,4 +49,3 @@ ENV OCR_VERSION=0.0.2
 # 假设你的入口文件是dist/src/main.js（这取决于你的项目结构）
 CMD ["node", "dist/main.js"]
 
-# 注意：上面的CMD命令中的dist/src/main.js只是一个示例，你需要根据你的项目实际情况来设置

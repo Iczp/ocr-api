@@ -1,6 +1,6 @@
 {
   "name": "ocr-api",
-  "version": "0.0.7",
+  "version": "0.1.1",
   "description": "API for OCR service with Tesseract",
   "author": "zhongpei <1000@intry.cn>",
   "email": "1000@intry.cn",
@@ -19,7 +19,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/src/main",
+    "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",

@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  app:
-    image: iczpnet/ocr-api:v0.0.8
+  ocr-api:
+    image: iczpnet/ocr-api:v0.1.1
 
     build:
       context: .
