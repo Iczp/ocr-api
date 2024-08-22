@@ -35,14 +35,15 @@ export class ApiKeyGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const apiKey = request.query['api-key'] || request.headers['x-api-key']; // 从请求头中获取 API Key
-    const validApiKey = this.configService.get<string>('API_KEY'); // 从环境变量中获取有效的 API Key
+    const envApiKey = this.configService.get<string>('API_KEY') || undefined; // 从环境变量中获取有效的 API Key
     console.log('apiKey', apiKey);
+    console.log('envApiKey', envApiKey);
     if (this.isDevelopmentMode()) {
       console.log('request.query', request.query['api-key']);
       console.log('request.params', request.params);
       return true;
     }
-    if (apiKey === validApiKey) {
+    if (apiKey === envApiKey) {
       return true;
     } else {
       throw new UnauthorizedException(`Invalid API key: ${apiKey}`);
