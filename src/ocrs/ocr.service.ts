@@ -7,6 +7,10 @@ export class OcrService {
   public readonly languages = langsConsts;
   async recognizeImage(langs: string | string[], buffer: Buffer) {
     const worker = await createWorker(langs, 1, {
+      // 设置 traineddata 文件目录
+      langPath: 'traineddata/',
+      cachePath: 'traineddata/',
+      // corePath: 'node_modules/tesseract.js-core/index.js',
       logger: (m) => {
         console.log(`worker ${m.workerId} - ${m.jobId} progress`, m.progress);
       },

@@ -8,7 +8,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # 安装生产环境依赖
-RUN npm install 
+RUN npm ci
+# RUN npm install 
 #--production
 
 # 将项目文件复制到容器中
@@ -25,10 +26,16 @@ WORKDIR /app
 
 # 复制构建产物
 COPY --from=builder /app/dist ./dist
-# COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
+
+COPY --from=builder /app/osd.traineddata ./
+COPY --from=builder /app/chi_sim.traineddata ./
+COPY --from=builder /app/chi_tra.traineddata ./
+COPY --from=builder /app/eng.traineddata ./
+
 # COPY --from=builder /app/npm-shrinkwrap.json ./npm-shrinkwrap.json 
-RUN npm install --production
+# RUN npm install --production
 # 确保生产环境依赖已正确安装（这一步在第二阶段其实是多余的，因为已经复制了node_modules）
 # 但如果需要进一步清理，可以使用npm prune --production
 
