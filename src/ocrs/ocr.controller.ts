@@ -19,12 +19,13 @@ import {
 } from '@nestjs/swagger';
 import { RecognizeInput } from './dtos/RecognizeInput';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileUploadDto } from 'src/dtos/FileUploadDto';
 import { FileUploadValidator } from 'src/validators/FileUploadValidator';
 import { RecognizeDto } from './dtos/RecognizeDto';
 import { BaseController } from 'src/bases/BaseController';
 import { mapToFileDto } from 'src/utils/mapToFileDto';
 import { AllowAnonymous } from 'src/guards/allowAnonymousKey.decorator';
+import { ImageInput } from 'src/dtos/ImageInput';
+import { Rectangle } from './dtos/Rectangle';
 
 @Controller('ocr')
 @ApiTags('OCR')
@@ -45,7 +46,7 @@ export class OcrController extends BaseController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'image',
-    type: FileUploadDto,
+    type: ImageInput,
   })
   @ApiResponse({
     status: 201,
@@ -58,13 +59,18 @@ export class OcrController extends BaseController {
       new FileUploadValidator(1024 * 1024 * 3, ['image/jpeg', 'image/png']),
     )
     file: Express.Multer.File,
-    @Body() body: any,
+    @Body() { rectangle }: { rectangle?: Rectangle },
   ): Promise<RecognizeDto> {
     const langs = Array.isArray(input.langs)
       ? input.langs
       : input.langs.split('+').filter((x) => !!x);
-    const result = await this.ocrService.recognizeImage(langs, file.buffer);
-    console.log('body', body);
+    const result = await this.ocrService.recognizeImage(
+      langs,
+      file.buffer,
+      rectangle,
+    );
+
+    console.log('rectangle', rectangle);
     console.log('originalname', file.originalname);
     return <RecognizeDto>{
       file: mapToFileDto(file),
